@@ -1,27 +1,35 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package infraestructura;
 
-import dominio.LogEntry;
 import java.sql.*;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ *
+ * @author tatia
+ */
 public class LogRepositorio {
-
-    public void registrar(LogEntry log) {
-        String sql = "INSERT INTO LOGS (fecha_hora, nivel, evento, detalle, stacktrace) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
-            stmt.setString(2, log.getNivel());
-            stmt.setString(3, log.getEvento());
-            stmt.setString(4, log.getDetalle());
-            stmt.setString(5, log.getStacktrace());
-
-            stmt.executeUpdate();
-
+    public List<String> obtenerLogs() {
+        List<String> logs = new ArrayList<>();
+        String sql = "SELECT fecha_hora, nivel, evento, detalle FROM LOGS ORDER BY fecha_hora DESC LIMIT 50";
+        try (Connection conn = ConexionBD.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                String linea = String.format("[%s] %s: %s - %s",
+                        rs.getString("fecha_hora"),
+                        rs.getString("nivel"),
+                        rs.getString("evento"),
+                        rs.getString("detalle"));
+                logs.add(linea);
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("No se pudieron cargar los logs: " + e.getMessage());
         }
+        return logs;
     }
 }
-
