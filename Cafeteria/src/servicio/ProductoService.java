@@ -6,6 +6,7 @@ package servicio;
 
 import dominio.Producto;
 import infraestructura.ProductoRepositorio;
+import java.util.List;
 
 /**
  *
