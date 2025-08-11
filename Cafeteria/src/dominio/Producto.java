@@ -12,34 +12,39 @@ import java.time.LocalDateTime;
  */
 public class Producto {
     private int id;
-    private String nombre;
+    private String nombreCompleto;
     private double precioUnitario;
     private boolean activo;
     private LocalDateTime creado;
-    
-    public Producto() {}
 
-    public Producto(String nombre, double precioUnitario) {
-        this.nombre = nombre;
+    public Producto(int id, String nombreCompleto, double precioUnitario, boolean activo, LocalDateTime creado) {
+        this.id = id;
+        this.nombreCompleto = nombreCompleto;
+        this.precioUnitario = precioUnitario;
+        this.activo = activo;
+        this.creado = creado;
+    }
+
+    // Para crear nuevos productos sin id ni creado
+    public Producto(String nombreCompleto, double precioUnitario) {
+        this.nombreCompleto = nombreCompleto;
         this.precioUnitario = precioUnitario;
         this.activo = true;
         this.creado = LocalDateTime.now();
     }
 
+    // Getters y setters...
+
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getNombreCompleto() {
+        return nombreCompleto;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombreCompleto(String nombreCompleto) {
+        this.nombreCompleto = nombreCompleto;
     }
 
     public double getPrecioUnitario() {
@@ -54,16 +59,8 @@ public class Producto {
         return activo;
     }
 
-    public void setActivo(boolean activo) {
-        this.activo = activo;
-    }
-
     public LocalDateTime getCreado() {
         return creado;
-    }
-
-    public void setCreado(LocalDateTime creado) {
-        this.creado = creado;
     }
 }
 

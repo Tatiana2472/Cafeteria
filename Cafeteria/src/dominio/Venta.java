@@ -10,24 +10,36 @@ import java.util.List;
  */
 public class Venta {
     private int id;
-    private int userId;
+    private Usuario usuario;
     private LocalDateTime fechaHora;
     private double subtotal;
-    private double impuestoIVA;
-    private double impuestoIVI;
+    private double impuestoIVA;   // IVA 7%
+    private double impuestoIVI;   // IVI 13%
     private double descuento;
     private double total;
     private List<DetalleVenta> detalles;
 
-   public Venta(int userId) {
-        this.userId = userId;
+    // Constructor completo (sin id para creación, con id para lectura)
+    public Venta(Usuario usuario) {
+        this.usuario = usuario;
         this.fechaHora = LocalDateTime.now();
         this.detalles = new ArrayList<>();
-        this.subtotal = 0;
-        this.impuestoIVA = 0;
-        this.impuestoIVI = 0;
-        this.descuento = 0;
     }
+
+    public Venta(int id, Usuario usuario, LocalDateTime fechaHora, double subtotal, double impuestoIva,
+                 double impuestoIvi, double descuento, double total, List<DetalleVenta> detalles) {
+        this.id = id;
+        this.usuario = usuario;
+        this.fechaHora = fechaHora;
+        this.subtotal = subtotal;
+        this.impuestoIVA = impuestoIva;
+        this.impuestoIVI = impuestoIvi;
+        this.descuento = descuento;
+        this.total = total;
+        this.detalles = detalles;
+    }
+
+    // Getters y Setters
 
     public int getId() {
         return id;
@@ -37,12 +49,12 @@ public class Venta {
         this.id = id;
     }
 
-    public int getUserId() {
-        return userId;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public LocalDateTime getFechaHora() {
@@ -101,30 +113,18 @@ public class Venta {
         this.detalles = detalles;
     }
 
-    public void agregarDetalle(DetalleVenta det) {
-    if (det == null) {
-        throw new IllegalArgumentException("El detalle no puede ser nulo");
-    }
-    this.detalles.add(det);
+    // Métodos funcionales
 
-    // Recalcular valores
-    recalcularTotales();
-}
-
-private void recalcularTotales() {
-    subtotal = 0;
-    for (DetalleVenta d : detalles) {
-        subtotal += d.getTotalLinea();  // suma total de cada detalle
+    public void agregarDetalle(DetalleVenta detalle) {
+        this.detalles.add(detalle);
     }
 
-    impuestoIVA = subtotal * 0.07;   // 7% IVA
-    impuestoIVI = subtotal * 0.13;   // 13% IVI
-
-    total = subtotal + impuestoIVA + impuestoIVI;
-
-    if (descuento > 0) {
-        total -= descuento;  // el descuento es monto fijo, según tu UI
-        }
+    public void calcularTotales() {
+        subtotal = detalles.stream().mapToDouble(DetalleVenta::getTotalLinea).sum();
+        impuestoIVA = subtotal * 0.07;
+        impuestoIVI = subtotal * 0.13;
+        // Descuento ya debe estar seteado previamente si aplica
+        total = subtotal + impuestoIVA + impuestoIVI - descuento;
     }
 }
     

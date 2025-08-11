@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * @author Estudiante
  */
 public class Usuario {
-   private int id;
+     private int id;
     private String username;
     private String passwordHash;
     private String rol;
@@ -20,14 +20,15 @@ public class Usuario {
 
     public Usuario() {}
 
-    public Usuario(String username, String passwordHash, String rol) {
+    public Usuario(int id, String username, String passwordHash, String rol, boolean activo, LocalDateTime creado) {
+        this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
         this.rol = rol;
-        this.activo = true;
-        this.creado = LocalDateTime.now();
+        this.activo = activo;
+        this.creado = creado;
     }
-
+    
     public int getId() {
         return id;
     }
@@ -72,7 +73,13 @@ public class Usuario {
         return creado;
     }
 
-    public void setCreado(LocalDateTime creado) {
+    // Getters y setters
+    public void setCreado(LocalDateTime creado) {    
         this.creado = creado;
+    }
+
+    public boolean validarPassword(String password) {
+        String hash = utilidades.HashUtil.hashSHA256(password);
+        return this.passwordHash.equalsIgnoreCase(hash);
     }
 }

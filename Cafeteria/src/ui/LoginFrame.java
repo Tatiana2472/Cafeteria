@@ -8,8 +8,9 @@ import dominio.Usuario;
 import servicio.AuthService;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
 /**
@@ -21,114 +22,82 @@ public class LoginFrame extends JFrame {
     private JPasswordField txtPassword;
     private JButton btnLogin;
     private AuthService authService;
-    private int intentosFallidos = 0;
 
     public LoginFrame() {
-        setTitle("Login - Café T&J");
-        setSize(400, 300);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
+        super("Login - Cafetería");
 
         authService = new AuthService();
-        initComponents();
+
+        // Configuración básica ventana
+        setSize(350, 200);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // Panel para campos
+        JPanel panelCampos = new JPanel(new GridLayout(2, 2, 10, 10));
+        panelCampos.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        panelCampos.add(new JLabel("Usuario:"));
+        txtUsername = new JTextField();
+        panelCampos.add(txtUsername);
+
+        panelCampos.add(new JLabel("Contraseña:"));
+        txtPassword = new JPasswordField();
+        panelCampos.add(txtPassword);
+
+        add(panelCampos, BorderLayout.CENTER);
+
+        // Panel para botón
+        JPanel panelBoton = new JPanel();
+        btnLogin = new JButton("Ingresar");
+        panelBoton.add(btnLogin);
+        add(panelBoton, BorderLayout.SOUTH);
+
+        // Acción botón login
+        btnLogin.addActionListener(e -> realizarLogin());
+
+        // Enter para login desde contraseña
+        txtPassword.addActionListener(e -> realizarLogin());
     }
 
-    private void initComponents() {
-        // Panel principal con color suave y padding
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(255, 240, 245)); // Rosa pastel suave
-        panel.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
-        panel.setLayout(new GridBagLayout());
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(15, 0, 15, 0);
-
-        // Etiqueta Usuario
-        JLabel lblUsuario = new JLabel("Usuario:");
-        lblUsuario.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblUsuario.setForeground(new Color(102, 51, 102)); // Morado suave
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        panel.add(lblUsuario, gbc);
-
-        // Campo Usuario grande, con borde redondeado
-        txtUsername = new JTextField(20);
-        txtUsername.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        txtUsername.setPreferredSize(new Dimension(250, 35));
-        txtUsername.setBackground(new Color(255, 250, 250));
-        txtUsername.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(204, 153, 204), 2, true), 
-            BorderFactory.createEmptyBorder(5, 10, 5, 10)
-        ));
-        gbc.gridy = 1;
-        gbc.gridx = 0;
-        panel.add(txtUsername, gbc);
-
-        // Etiqueta Contraseña
-        JLabel lblPassword = new JLabel("Contraseña:");
-        lblPassword.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblPassword.setForeground(new Color(102, 51, 102));
-        gbc.gridy = 2;
-        gbc.gridx = 0;
-        panel.add(lblPassword, gbc);
-
-        // Campo Contraseña grande, con borde redondeado
-        txtPassword = new JPasswordField(20);
-        txtPassword.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        txtPassword.setPreferredSize(new Dimension(250, 35));
-        txtPassword.setBackground(new Color(255, 250, 250));
-        txtPassword.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(204, 153, 204), 2, true),
-            BorderFactory.createEmptyBorder(5, 10, 5, 10)
-        ));
-        gbc.gridy = 3;
-        gbc.gridx = 0;
-        panel.add(txtPassword, gbc);
-
-        // Botón Login grande, redondeado y con degradado suave
-        btnLogin = new JButton("Iniciar Sesión");
-        btnLogin.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        btnLogin.setBackground(new Color(221, 160, 221)); // Lavanda
-        btnLogin.setForeground(Color.WHITE);
-        btnLogin.setFocusPainted(false);
-        btnLogin.setPreferredSize(new Dimension(200, 40));
-        btnLogin.setBorder(BorderFactory.createLineBorder(new Color(153, 102, 153), 2, true));
-        btnLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        btnLogin.addActionListener(e -> manejarLogin());
-
-        gbc.gridy = 4;
-        gbc.gridx = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
-        panel.add(btnLogin, gbc);
-
-        add(panel);
-    }
-
-    private void manejarLogin() {
-        String username = txtUsername.getText();
+    private void realizarLogin() {
+        String username = txtUsername.getText().trim();
         String password = new String(txtPassword.getPassword());
 
-        try {
-            Usuario usuario = authService.login(username, password);
-            if (usuario != null) {
-                JOptionPane.showMessageDialog(this, "Bienvenido " + usuario.getUsername());
-                dispose(); // Cierra ventana
-                // Aquí podrías abrir la ventana principal
-            } else {
-                intentosFallidos++;
-                if (intentosFallidos >= 3) {
-                    JOptionPane.showMessageDialog(this, "Demasiados intentos fallidos. Saliendo...");
-                    System.exit(0);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Credenciales incorrectas. Intentos: " + intentosFallidos);
-                }
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error en la base de datos: " + ex.getMessage());
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor ingrese usuario y contraseña.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        try {
+            if (authService.estaBloqueado(username)) {
+                JOptionPane.showMessageDialog(this, "Usuario bloqueado. Contacte al administrador.", "Acceso Denegado", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            boolean loginExitoso = authService.login(username, password);
+
+            if (loginExitoso) {
+                Usuario usuario = authService.obtenerUsuario(username);
+                JOptionPane.showMessageDialog(this, "¡Bienvenido, " + usuario.getUsername() + "!", "Login Exitoso", JOptionPane.INFORMATION_MESSAGE);
+                // Aquí puedes abrir la ventana principal o hacer lo que sigue en tu app
+                this.dispose(); // cerrar login
+                // new MainFrame(usuario).setVisible(true); // ejemplo de abrir siguiente ventana
+            } else {
+                JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error de base de datos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            LoginFrame frame = new LoginFrame();
+            frame.setVisible(true);
+        });
     }
 }

@@ -6,20 +6,34 @@ package dominio;
  */
 public class DetalleVenta {
     private int id;
-    private int ventaId;
-    private int productoId;
+    private Venta venta;
+    private Producto producto;
     private int cantidad;
     private double precioUnit;
     private double totalLinea;
+    private double precioUnitario;
 
     public DetalleVenta() {}
 
-    public DetalleVenta(int ventaId, int productoId, int cantidad, double precioUnit) {
-        this.ventaId = ventaId;
-        this.productoId = productoId;
+    public DetalleVenta(int id, Venta venta, Producto producto, int cantidad, double precioUnit, double totalLinea) {
+        this.id = id;
+        this.venta = venta;
+        this.producto = producto;
         this.cantidad = cantidad;
         this.precioUnit = precioUnit;
-        this.totalLinea = cantidad * precioUnit;
+        this.totalLinea = totalLinea;
+    }
+    
+    public DetalleVenta(Venta venta, Producto producto, int cantidad, double precioUnitario) {
+        this.venta = venta;
+        this.producto = producto;
+        this.cantidad = cantidad;
+        this.precioUnitario = precioUnitario;
+        this.totalLinea = cantidad * precioUnitario;
+    }
+
+    public double getPrecioUnitario() {
+        return precioUnitario;
     }
 
     public int getId() {
@@ -30,20 +44,20 @@ public class DetalleVenta {
         this.id = id;
     }
 
-    public int getVentaId() {
-        return ventaId;
+    public Venta getVenta() {
+        return venta;
     }
 
-    public void setVentaId(int ventaId) {
-        this.ventaId = ventaId;
+    public void setVenta(Venta venta) {
+        this.venta = venta;
     }
 
-    public int getProductoId() {
-        return productoId;
+    public Producto getProducto() {
+        return producto;
     }
 
-    public void setProductoId(int productoId) {
-        this.productoId = productoId;
+    public void setProducto(Producto producto) {
+        this.producto = producto;
     }
 
     public int getCantidad() {

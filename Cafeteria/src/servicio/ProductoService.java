@@ -5,30 +5,52 @@
 package servicio;
 
 import dominio.Producto;
+import infraestructura.ConexionBD;
 import infraestructura.ProductoRepositorio;
+
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  *
  * @author tatia
  */
 public class ProductoService {
-    private ProductoRepositorio repo = new ProductoRepositorio();
+    private ProductoRepositorio repo;
 
-    public List<Producto> getProductosActivos() {
-        return repo.listarActivos();
+    public ProductoService() {
+        repo = new ProductoRepositorio();
     }
 
-    public void crearProducto(Producto producto) {
-        repo.crear(producto);
+    public List<Producto> getProductosActivos() throws SQLException {
+        return repo.listarProductos(true);
     }
 
-    public void actualizarProducto(Producto producto) {
-        repo.actualizar(producto);
+    public List<Producto> getTodosProductos() throws SQLException {
+        return repo.listarProductos(false);
     }
 
-    public Producto findById(int id) {
-        return repo.findById(id);
+    public void crearProducto(Producto p) throws SQLException {
+        repo.crearProducto(p);
+    }
+
+    public void actualizarProducto(Producto p) throws SQLException {
+        repo.actualizarProducto(p);
+    }
+
+    public void activarProducto(int id) throws SQLException {
+        repo.activarProducto(id);
+    }
+
+    public void inactivarProducto(int id) throws SQLException {
+        repo.inactivarProducto(id);
+    }
+
+    public Producto findById(int id) throws SQLException {
+        return repo.buscarPorId(id);
     }
 }
 

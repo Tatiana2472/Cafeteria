@@ -4,11 +4,9 @@ import javax.swing.SwingUtilities;
 import ui.LoginFrame;
 
 public class Main {
-    public static void main(String[] args) {
-         // Ejecutar la UI en el hilo de eventos (buena práctica)
+   public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            LoginFrame login = new LoginFrame();
-            login.setVisible(true);
+            new LoginFrame().setVisible(true);
         });
     }
 }

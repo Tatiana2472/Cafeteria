@@ -1,5 +1,7 @@
 package infraestructura;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,33 +16,27 @@ public class ConexionBD {
 
     static {
         try {
-            Class.forName("org.postgresql.Driver"); // Cargar driver
+            // Carga driver JDBC PostgreSQL
+            Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("No se encontro el Driver de PostgreSQL", e);
+            System.err.println("Error cargando driver JDBC: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USUARIO, CONTRASENA);
-    }
-    
-    public static Connection obtenerConexion() throws SQLException {
+    // Método para obtener conexión
+    public static Connection getConexion() throws SQLException {
         return DriverManager.getConnection(URL, USUARIO, CONTRASENA);
     }
 
-   public static void registrarError(String mensaje, SQLException e) {
-        String sql = "INSERT INTO logs (mensaje, detalle, fecha) VALUES (?, ?, ?)";
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, mensaje);
-            stmt.setString(2, e.getMessage());
-            stmt.setTimestamp(3, java.sql.Timestamp.valueOf(LocalDateTime.now()));
-
-            stmt.executeUpdate();
-
-        } catch (SQLException ex) {
-            System.err.println("No se pudo registrar el error en la base de datos: " + ex.getMessage());
+    // Registra errores en un log simple (puedes cambiar a logger real)
+    public static void registrarError(String mensaje, Exception e) {
+        System.err.println("[" + LocalDateTime.now() + "] ERROR: " + mensaje);
+        if (e != null) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            System.err.println(sw.toString());
         }
     }
 }
+
