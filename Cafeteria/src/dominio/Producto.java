@@ -4,6 +4,7 @@
  */
 package dominio;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -12,16 +13,57 @@ import java.math.BigDecimal;
 public class Producto {
     private int id;
     private String nombre;
-    private BigDecimal precioUnitario;
+    private double precioUnitario;
     private boolean activo;
+    private LocalDateTime creado;
+    
     public Producto() {}
-    // getters y setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public BigDecimal getPrecioUnitario() { return precioUnitario; }
-    public void setPrecioUnitario(BigDecimal precioUnitario) { this.precioUnitario = precioUnitario; }
-    public boolean isActivo() { return activo; }
-    public void setActivo(boolean activo) { this.activo = activo; }
+
+    public Producto(String nombre, double precioUnitario) {
+        this.nombre = nombre;
+        this.precioUnitario = precioUnitario;
+        this.activo = true;
+        this.creado = LocalDateTime.now();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public double getPrecioUnitario() {
+        return precioUnitario;
+    }
+
+    public void setPrecioUnitario(double precioUnitario) {
+        this.precioUnitario = precioUnitario;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    public LocalDateTime getCreado() {
+        return creado;
+    }
+
+    public void setCreado(LocalDateTime creado) {
+        this.creado = creado;
+    }
 }
+

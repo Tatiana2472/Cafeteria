@@ -7,6 +7,7 @@ package servicio;
 import dominio.Usuario;
 import infraestructura.ConexionBD;
 import infraestructura.UsuarioRepositorio;
+import java.sql.SQLException;
 import utilidades.Encriptador;
 /**
  *
@@ -21,14 +22,14 @@ public class AuthService {
             if (usuario != null) {
                 String hashedPassword = Encriptador.hashSHA256(password);
                 if (hashedPassword.equals(usuario.getPasswordHash())) {
-                    ConexionBD.registrarError("Login exitoso", new Exception("Usuario: " + username));
+                    ConexionBD.registrarError("Login exitoso", (SQLException) new Exception("Usuario: " + username));
                     return usuario;
                 }
             }
-            ConexionBD.registrarError("Intento de login fallido", new Exception("Usuario: " + username));
+            ConexionBD.registrarError("Intento de login fallido", (SQLException) new Exception("Usuario: " + username));
             return null;
         } catch (Exception e) {
-            ConexionBD.registrarError("Error en autenticación", e);
+            ConexionBD.registrarError("Error en autenticación", (SQLException) e);
             return null;
         }
     }

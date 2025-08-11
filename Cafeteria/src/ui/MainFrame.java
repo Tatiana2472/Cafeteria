@@ -5,6 +5,7 @@
 package ui;
 
 import dominio.*;
+import infraestructura.LogRepositorio;
 import servicio.*;
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import infraestructura.ConexionBD;
 
 /**
  *

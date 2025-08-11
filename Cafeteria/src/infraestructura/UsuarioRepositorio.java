@@ -42,4 +42,8 @@ public class UsuarioRepositorio {
             throw new RuntimeException("Error en hash SHA-256", e);
         }
     }
+
+    public Usuario findByUsername(String username) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

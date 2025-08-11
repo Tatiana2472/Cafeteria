@@ -24,7 +24,7 @@ public class LoginFrame extends JFrame {
     private int intentos = 0;
 
     public LoginFrame() {
-        setTitle("Login - Cafetería Josss y Tati");
+        setTitle("Login - Cafetería Joss y Tati");
         setSize(400, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
