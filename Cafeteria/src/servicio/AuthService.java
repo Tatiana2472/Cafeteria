@@ -5,32 +5,36 @@
 package servicio;
 
 import dominio.Usuario;
-import infraestructura.ConexionBD;
 import infraestructura.UsuarioRepositorio;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import utilidades.Encriptador;
 /**
  *
  * @author tatia
  */
 public class AuthService {
-    private UsuarioRepositorio repo = new UsuarioRepositorio();
+    private final UsuarioRepositorio usuarioRepo = new UsuarioRepositorio();
 
-    public Usuario login(String username, String password) {
+    public Usuario login(String username, String password) throws SQLException {
+        String passwordHash = hashPassword(password);
+        return usuarioRepo.buscarPorUsernameYPassword(username, passwordHash);
+    }
+
+    private String hashPassword(String password) {
         try {
-            Usuario usuario = repo.findByUsername(username);
-            if (usuario != null) {
-                String hashedPassword = Encriptador.hashSHA256(password);
-                if (hashedPassword.equals(usuario.getPasswordHash())) {
-                    ConexionBD.registrarError("Login exitoso", (SQLException) new Exception("Usuario: " + username));
-                    return usuario;
-                }
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
             }
-            ConexionBD.registrarError("Intento de login fallido", (SQLException) new Exception("Usuario: " + username));
-            return null;
-        } catch (Exception e) {
-            ConexionBD.registrarError("Error en autenticación", (SQLException) e);
-            return null;
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error al hashear la contraseña", e);
         }
     }
 }

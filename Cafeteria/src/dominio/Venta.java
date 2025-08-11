@@ -17,14 +17,16 @@ public class Venta {
     private double impuestoIVI;
     private double descuento;
     private double total;
-    private List<DetalleVenta> detalles = new ArrayList<>();
+    private List<DetalleVenta> detalles;
 
-
-   public Venta() {}
-
-    public Venta(int userId) {
+   public Venta(int userId) {
         this.userId = userId;
         this.fechaHora = LocalDateTime.now();
+        this.detalles = new ArrayList<>();
+        this.subtotal = 0;
+        this.impuestoIVA = 0;
+        this.impuestoIVI = 0;
+        this.descuento = 0;
     }
 
     public int getId() {
@@ -100,7 +102,29 @@ public class Venta {
     }
 
     public void agregarDetalle(DetalleVenta det) {
-        
+    if (det == null) {
+        throw new IllegalArgumentException("El detalle no puede ser nulo");
+    }
+    this.detalles.add(det);
+
+    // Recalcular valores
+    recalcularTotales();
+}
+
+private void recalcularTotales() {
+    subtotal = 0;
+    for (DetalleVenta d : detalles) {
+        subtotal += d.getTotalLinea();  // suma total de cada detalle
+    }
+
+    impuestoIVA = subtotal * 0.07;   // 7% IVA
+    impuestoIVI = subtotal * 0.13;   // 13% IVI
+
+    total = subtotal + impuestoIVA + impuestoIVI;
+
+    if (descuento > 0) {
+        total -= descuento;  // el descuento es monto fijo, según tu UI
+        }
     }
 }
     

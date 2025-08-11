@@ -2,48 +2,49 @@ package infraestructura;
 
 import dominio.Usuario;
 import java.sql.*;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class UsuarioRepositorio {
 
-    public Usuario buscarPorUsernameYPassword(String username, String password) {
-        String sql = "SELECT * FROM USUARIOS WHERE username = ? AND password = ? AND activo = true";
-        try (Connection conn = ConexionBD.obtenerConexion();
+   public Usuario findByUsername(String username) throws SQLException {
+        String sql = "SELECT * FROM usuarios WHERE username = ?";
+        try (Connection conn = ConexionBD.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setString(1, username);
-            stmt.setString(2, hashSHA256(password));
-
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    Usuario u = new Usuario();
-                    u.setId(rs.getInt("id"));
-                    u.setUsername(rs.getString("username"));
-                    u.setRol(rs.getString("rol"));
-                    u.setActivo(rs.getBoolean("activo"));
-                    return u;
+                    Usuario usuario = new Usuario();
+                    usuario.setId(rs.getInt("id"));
+                    usuario.setUsername(rs.getString("username"));
+                    usuario.setPasswordHash(rs.getString("password_hash"));
+                    usuario.setRol(rs.getString("rol"));
+                    usuario.setActivo(rs.getBoolean("activo"));
+                    usuario.setCreado(rs.getTimestamp("creado").toLocalDateTime());
+                    return usuario;
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        }
+        return null; // No encontrado
+    }
+
+    public Usuario buscarPorUsernameYPassword(String username, String passwordHash) throws SQLException {
+        String sql = "SELECT * FROM usuarios WHERE username = ? AND password_hash = ?";
+        try (Connection conn = ConexionBD.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setString(2, passwordHash);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Usuario usuario = new Usuario();
+                    usuario.setId(rs.getInt("id"));
+                    usuario.setUsername(rs.getString("username"));
+                    usuario.setPasswordHash(rs.getString("password_hash"));
+                    usuario.setRol(rs.getString("rol"));
+                    usuario.setActivo(rs.getBoolean("activo"));
+                    usuario.setCreado(rs.getTimestamp("creado").toLocalDateTime());
+                    return usuario;
+                }
+            }
         }
         return null;
-    }
-
-    private String hashSHA256(String texto) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = md.digest(texto.getBytes());
-            StringBuilder sb = new StringBuilder();
-            for (byte b : hashBytes) sb.append(String.format("%02x", b));
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error en hash SHA-256", e);
-        }
-    }
-
-    public Usuario findByUsername(String username) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

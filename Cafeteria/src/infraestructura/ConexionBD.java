@@ -1,10 +1,10 @@
 package infraestructura;
 
-import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import java.time.LocalDateTime;
 
 public class ConexionBD {
 
@@ -28,6 +28,19 @@ public class ConexionBD {
         return DriverManager.getConnection(URL, USUARIO, CONTRASENA);
     }
 
-   public static void registrarError(String error_al_actualizar_producto, SQLException e) {
+   public static void registrarError(String mensaje, SQLException e) {
+        String sql = "INSERT INTO logs (mensaje, detalle, fecha) VALUES (?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, mensaje);
+            stmt.setString(2, e.getMessage());
+            stmt.setTimestamp(3, java.sql.Timestamp.valueOf(LocalDateTime.now()));
+
+            stmt.executeUpdate();
+
+        } catch (SQLException ex) {
+            System.err.println("No se pudo registrar el error en la base de datos: " + ex.getMessage());
+        }
     }
 }
